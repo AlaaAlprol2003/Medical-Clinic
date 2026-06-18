@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:medical_clinic/core/routes_manager/app_routes.dart';
+import 'package:medical_clinic/features/auth/presentation/screens/login.dart';
 import 'package:medical_clinic/features/auth/presentation/screens/register.dart';
 
 class AppRouter {
@@ -8,6 +9,11 @@ class AppRouter {
       case AppRoutes.register:
         {
           return CupertinoPageRoute(builder: (context) => Register());
+        }
+
+      case AppRoutes.login:
+        {
+          return CupertinoPageRoute(builder: (context) => Login());
         }
     }
 
