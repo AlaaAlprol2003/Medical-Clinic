@@ -4,10 +4,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical_clinic/core/routes_manager/app_router.dart';
 import 'package:medical_clinic/core/routes_manager/app_routes.dart';
 import 'package:medical_clinic/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:medical_clinic/features/main_layout/cubit/main_layout_cubit.dart';
 
 void main() {
   runApp(
-    BlocProvider(create: (context) => AuthCubit(), child: MedicalClinic()),
+    MultiBlocProvider(providers: [
+      BlocProvider(create: (context) => AuthCubit()),
+      BlocProvider(create: (context)=> MainLayoutCubit())
+    ], child: MedicalClinic())
+    
   );
 }
 
@@ -22,7 +27,7 @@ class MedicalClinic extends StatelessWidget {
       minTextAdapt: true,
       builder: (context, _) {
         return MaterialApp(
-          initialRoute: AppRoutes.login,
+          initialRoute: AppRoutes.main_layout,
           onGenerateRoute: AppRouter.router,
           themeMode: ThemeMode.light,
           debugShowCheckedModeBanner: false,

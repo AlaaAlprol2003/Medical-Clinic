@@ -179,7 +179,7 @@ class _RegisterState extends State<Register> {
                             "لديك حساب بالفعل؟ ",
                             textDirection: TextDirection.rtl,
                             style: GoogleFonts.notoSansArabic(
-                              fontSize: 14.sp,
+                              fontSize: 12.sp,
                               fontWeight: FontWeight.w600,
                               color: ColorsManager.black,
                             ),
