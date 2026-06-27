@@ -4,11 +4,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:medical_clinic/core/resources/assets_manager.dart';
 import 'package:medical_clinic/core/resources/colors_manager.dart';
+import 'package:medical_clinic/core/resources/ui_utils.dart';
 import 'package:medical_clinic/core/resources/validators.dart';
 import 'package:medical_clinic/core/routes_manager/app_routes.dart';
 import 'package:medical_clinic/core/widgets/custom_elevated_button.dart';
 import 'package:medical_clinic/core/widgets/custom_text_button.dart';
 import 'package:medical_clinic/core/widgets/custom_text_form_field.dart';
+import 'package:medical_clinic/features/auth/data/models/register_request.dart';
 import 'package:medical_clinic/features/auth/presentation/cubit/auth_cubit.dart';
 
 class Register extends StatefulWidget {
@@ -23,7 +25,7 @@ class _RegisterState extends State<Register> {
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
   late TextEditingController _passwordController;
-
+ final  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   void initState() {
     super.initState();
@@ -52,167 +54,193 @@ class _RegisterState extends State<Register> {
         child: Padding(
           padding: REdgeInsets.symmetric(vertical: 35),
           child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Image.asset(ImageAssets.logo, height: 220.h),
-                SizedBox(height: 20.h),
-                Container(
-                  width: double.infinity,
-                  height: 500.h,
-                  margin: REdgeInsets.symmetric(horizontal: 16),
-                  padding: REdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: ColorsManager.white,
-                    borderRadius: BorderRadius.circular(16.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: ColorsManager.black.withValues(alpha: .06),
-
-                        blurRadius: 20,
-
-                        offset: const Offset(0, 10),
-
-                        spreadRadius: -2,
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      CustomTextFormField(
-                        hint: "ألاسم كامل",
-                        suffixIcon: Icon(
-                          Icons.person,
-                          color: ColorsManager.grey,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(ImageAssets.logo, height: 220.h),
+                  SizedBox(height: 20.h),
+                  Container(
+                    width: double.infinity,
+                    height: 500.h,
+                    margin: REdgeInsets.symmetric(horizontal: 16),
+                    padding: REdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: ColorsManager.white,
+                      borderRadius: BorderRadius.circular(16.r),
+                      boxShadow: [
+                        BoxShadow(
+                          color: ColorsManager.black.withValues(alpha: .06),
+              
+                          blurRadius: 20,
+              
+                          offset: const Offset(0, 10),
+              
+                          spreadRadius: -2,
                         ),
-                        controller: _nameController,
-                        validator: Validator.name,
-                      ),
-                      SizedBox(height: 12.h),
-                      CustomTextFormField(
-                        hint: "البريد الإلكتروني",
-                        suffixIcon: Icon(
-                          Icons.email,
-                          color: ColorsManager.grey,
-                        ),
-                        keyboardType: TextInputType.emailAddress,
-                        controller: _emailController,
-                        validator: Validator.email,
-                      ),
-                      SizedBox(height: 12.h),
-                      CustomTextFormField(
-                        hint: "رقم الهاتف",
-
-                        suffixIcon: Icon(
-                          Icons.phone,
-                          color: ColorsManager.grey,
-                        ),
-                        keyboardType: TextInputType.phone,
-                        controller: _phoneController,
-                        validator: Validator.phone,
-                      ),
-                      SizedBox(height: 12.h),
-                      BlocBuilder<AuthCubit, AuthState>(
-                        builder: (context, state) {
-                          return CustomTextFormField(
-                            hint: "كلمة المرور",
-                            isSecured: cubit.securePassword,
-                            preIcon: InkWell(
-                              onTap: () {
-                                cubit.changePasswordVisibility();
-                              },
-                              child: Icon(
-                                cubit.securePassword
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                                color: ColorsManager.grey,
-                              ),
-                            ),
-                            keyboardType: TextInputType.visiblePassword,
-                            controller: _passwordController,
-                            validator: Validator.password,
-                          );
-                        },
-                      ),
-                      SizedBox(height: 16.h),
-                      BlocBuilder<AuthCubit, AuthState>(
-                        builder: (context, state) {
-                          return CheckboxMenuButton(
-                            value: cubit.isChecked,
-                            onChanged: (value) {
-                              cubit.changeCheckState(value: value ?? false);
-                            },
-                            child: Text(
-                              "اوافق على شروط الخدمة وسياسة الخصوصية",
-                              textDirection: TextDirection.rtl,
-                              style: GoogleFonts.notoSansArabic(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w500,
-                                color: ColorsManager.black,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      SizedBox(height: 16.h),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 60.h,
-                        child: Padding(
-                          padding: REdgeInsets.symmetric(horizontal: 12.0),
-                          child: CustomElevatedButton(
-                            onPressed: () {},
-                            text: "انشاء حساب",
-                          ),
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      ],
+                    ),
+                    child: SingleChildScrollView(
+                      child: Column(
                         children: [
-                          CustomTextButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, AppRoutes.login);
-                            },
-                            text: "تسجيل الدخول بدلا من ذلك",
-                          ),
-                          Text(
-                            "لديك حساب بالفعل؟ ",
-                            textDirection: TextDirection.rtl,
-                            style: GoogleFonts.notoSansArabic(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w600,
-                              color: ColorsManager.black,
+                          CustomTextFormField(
+                            hint: "ألاسم كامل",
+                            suffixIcon: Icon(
+                              Icons.person,
+                              color: ColorsManager.grey,
                             ),
+                            controller: _nameController,
+                            validator: Validator.name,
+                          ),
+                          SizedBox(height: 12.h),
+                          CustomTextFormField(
+                            hint: "البريد الإلكتروني",
+                            suffixIcon: Icon(
+                              Icons.email,
+                              color: ColorsManager.grey,
+                            ),
+                            keyboardType: TextInputType.emailAddress,
+                            controller: _emailController,
+                            validator: Validator.email,
+                          ),
+                          SizedBox(height: 12.h),
+                          CustomTextFormField(
+                            hint: "رقم الهاتف",
+                                    
+                            suffixIcon: Icon(
+                              Icons.phone,
+                              color: ColorsManager.grey,
+                            ),
+                            keyboardType: TextInputType.phone,
+                            controller: _phoneController,
+                            validator: Validator.phone,
+                          ),
+                          SizedBox(height: 12.h),
+                          BlocBuilder<AuthCubit, AuthState>(
+                            builder: (context, state) {
+                              return CustomTextFormField(
+                                hint: "كلمة المرور",
+                                isSecured: cubit.securePassword,
+                                preIcon: InkWell(
+                                  onTap: () {
+                                    cubit.changePasswordVisibility();
+                                  },
+                                  child: Icon(
+                                    cubit.securePassword
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                    color: ColorsManager.grey,
+                                  ),
+                                ),
+                                keyboardType: TextInputType.visiblePassword,
+                                controller: _passwordController,
+                                validator: Validator.password,
+                              );
+                            },
+                          ),
+                          SizedBox(height: 16.h),
+                          BlocBuilder<AuthCubit, AuthState>(
+                            builder: (context, state) {
+                              return CheckboxMenuButton(
+                                value: cubit.isChecked,
+                                onChanged: (value) {
+                                  cubit.changeCheckState(value: value ?? false);
+                                },
+                                child: Text(
+                                  "اوافق على شروط الخدمة وسياسة الخصوصية",
+                                  textDirection: TextDirection.rtl,
+                                  style: GoogleFonts.notoSansArabic(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: ColorsManager.black,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          SizedBox(height: 16.h),
+                          BlocListener<AuthCubit,AuthState>(
+                            listener: (context, state) {
+                              if(state is RegisterLoadingState){
+                                UiUtils.showLoading(context: context);
+                              }else if (state is RegisterFailureState){
+                                UiUtils.hideLoading(context: context);
+                                UiUtils.showMessage(context: context, message: state.message, bgColor: Colors.red, fgColor: ColorsManager.blueWhite);
+                              }else if(state is RegisterSuccessState){
+                                UiUtils.hideLoading(context: context);
+                                UiUtils.showMessage(context: context,message:"تم التسجيل بنجاح",bgColor: ColorsManager.blue,fgColor: Colors.white);
+                                Navigator.pushNamed(context, AppRoutes.login);
+                              }
+                            },
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 60.h,
+                              child: Padding(
+                                padding: REdgeInsets.symmetric(horizontal: 12.0),
+                                child: CustomElevatedButton(
+                                  onPressed: ()async {
+                                    if (_formKey.currentState?.validate() == false) return;
+                                    if(cubit.isChecked == false){
+                                      UiUtils.showMessage(context: context, message: "يجب الموافقة على شروط الخدمة ", bgColor: Colors.red, fgColor: ColorsManager.blueWhite);
+                                      return;
+                                    }
+                                   await cubit.register(request: RegisterRequest(email: _emailController.text,password:_passwordController.text));
+                                  },
+                                  text: "انشاء حساب",
+                                ),
+                              ),
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CustomTextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(context, AppRoutes.login);
+                                },
+                                text: "تسجيل الدخول بدلا من ذلك",
+                              ),
+                              Text(
+                                "لديك حساب بالفعل؟ ",
+                                textDirection: TextDirection.rtl,
+                                style: GoogleFonts.notoSansArabic(
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsManager.black,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "برمجة وتطوير",
+                        style: GoogleFonts.roboto(
+                          color: ColorsManager.blue,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 12.h),
+                      Text(
+                        " علاء أحمد & عمر تامر",
+                        style: GoogleFonts.roboto(
+                          color: ColorsManager.black,
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ],
                   ),
-                ),
-                SizedBox(height: 16.h),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      "برمجة وتطوير",
-                      style: GoogleFonts.roboto(
-                        color: ColorsManager.blue,
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    SizedBox(height: 12.h),
-                    Text(
-                      " علاء أحمد & عمر تامر",
-                      style: GoogleFonts.roboto(
-                        color: ColorsManager.black,
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

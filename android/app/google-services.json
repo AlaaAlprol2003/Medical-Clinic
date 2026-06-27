@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "83199408659",
+    "project_id": "medical-clinic-8f292",
+    "storage_bucket": "medical-clinic-8f292.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:83199408659:android:c44be040221dc75745dde6",
+        "android_client_info": {
+          "package_name": "com.example.medical_clinic"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQHQJZkIMH-anMKQrtekrV6lmlrMdAwQo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
