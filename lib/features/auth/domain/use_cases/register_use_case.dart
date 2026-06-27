@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:injectable/injectable.dart';
 import 'package:medical_clinic/core/errors/failure.dart';
 import 'package:medical_clinic/features/auth/data/models/register_request.dart';
@@ -8,7 +9,7 @@ class RegisterUseCase {
   AuthRepository authRepository;
   RegisterUseCase({required this.authRepository});
 
-  Future<Either<Failure, void>> call({required RegisterRequest request}) {
+  Future<Either<Failure, UserCredential>> call({required RegisterRequest request}) {
     return authRepository.register(request: request);
   }
 }

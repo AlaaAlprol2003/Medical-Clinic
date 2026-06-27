@@ -170,7 +170,8 @@ class _RegisterState extends State<Register> {
                               }else if(state is RegisterSuccessState){
                                 UiUtils.hideLoading(context: context);
                                 UiUtils.showMessage(context: context,message:"تم التسجيل بنجاح",bgColor: ColorsManager.blue,fgColor: Colors.white);
-                                Navigator.pushNamed(context, AppRoutes.login);
+                                cubit.resetAuthState();
+                                Navigator.pushReplacementNamed(context, AppRoutes.login);
                               }
                             },
                             child: SizedBox(
@@ -185,7 +186,7 @@ class _RegisterState extends State<Register> {
                                       UiUtils.showMessage(context: context, message: "يجب الموافقة على شروط الخدمة ", bgColor: Colors.red, fgColor: ColorsManager.blueWhite);
                                       return;
                                     }
-                                   await cubit.register(request: RegisterRequest(email: _emailController.text,password:_passwordController.text));
+                                   await cubit.register(request: RegisterRequest(email: _emailController.text,password:_passwordController.text,name: _nameController.text,phone: _phoneController.text));
                                   },
                                   text: "انشاء حساب",
                                 ),
