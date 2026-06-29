@@ -6,6 +6,7 @@ import 'package:medical_clinic/core/di/service_locator.dart';
 import 'package:medical_clinic/core/routes_manager/app_router.dart';
 import 'package:medical_clinic/core/routes_manager/app_routes.dart';
 import 'package:medical_clinic/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:medical_clinic/features/booking/presentation/cubit/booking_cubit.dart';
 import 'package:medical_clinic/features/main_layout/cubit/main_layout_cubit.dart';
 import 'package:medical_clinic/firebase_options.dart';
 
@@ -18,6 +19,8 @@ void main() async {
       providers: [
         BlocProvider(create: (context) => serviceLocator.get<AuthCubit>()),
         BlocProvider(create: (context) => MainLayoutCubit()),
+        BlocProvider(create: (context) => serviceLocator.get<AppointmentCubit>()),
+
       ],
       child: MedicalClinic(),
     ),

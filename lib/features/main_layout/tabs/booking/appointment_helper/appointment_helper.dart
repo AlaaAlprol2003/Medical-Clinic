@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
 
 class AppointmentHelper {
-
   static List<DateTime> getAvailableDays() {
     final now = DateTime.now();
+    final endDate = DateTime(now.year + 10, now.month, now.day);
+
     final List<DateTime> availableDays = [];
 
-    for (int i = 0; i < 30; i++) {
-      final date = now.add(Duration(days: i));
+    DateTime current = now;
 
-      if (date.weekday == DateTime.thursday ||
-          date.weekday == DateTime.saturday ||
-          date.weekday == DateTime.sunday) {
-        availableDays.add(date);
+    while (!current.isAfter(endDate)) {
+      if (current.weekday == DateTime.thursday ||
+          current.weekday == DateTime.saturday ||
+          current.weekday == DateTime.sunday) {
+        availableDays.add(current);
       }
+
+      current = current.add(const Duration(days: 1));
     }
 
     return availableDays;
   }
-
 
   static String getArabicDayName(DateTime date) {
     switch (date.weekday) {
@@ -32,7 +34,6 @@ class AppointmentHelper {
         return '';
     }
   }
-
 
   static List<String> getAvailableTimes() {
     List<String> times = [];

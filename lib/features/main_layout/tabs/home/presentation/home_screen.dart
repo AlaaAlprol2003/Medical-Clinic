@@ -1,18 +1,22 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical_clinic/core/resources/assets_manager.dart';
 import 'package:medical_clinic/core/resources/colors_manager.dart';
+import 'package:medical_clinic/features/auth/data/models/user.dart';
 import 'package:medical_clinic/features/main_layout/tabs/home/widgets/working_hours_card.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../../core/widgets/custom_elevated_button.dart';
+
 import '../widgets/clinic_location_card.dart';
 import '../widgets/custom_appbar.dart';
 import '../widgets/doctor_biography_card.dart';
 import '../widgets/welcome_section.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+
+   HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +40,7 @@ class HomeScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 WelcomeSection(
-                  userName: "مرحباً, عمر",
+                  userName: " ${UserModel.currentUser?.name},مرحباً ",
                   subtitle: "مرحباً بك مجدداً فى عيادتك المفضلة",
                 ),
 
