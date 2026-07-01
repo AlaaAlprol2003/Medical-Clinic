@@ -28,15 +28,12 @@ class _BookingScreenState extends State<BookingScreen> {
 
   final TextEditingController _phoneController = TextEditingController();
 
-  String? selectedVisitType;
-  DateTime? selectedDay;
-  String? selectedTime;
-
   late final List<DateTime> availableDays;
 
   @override
   void initState() {
     super.initState();
+
     availableDays = AppointmentHelper.getAvailableDays();
   }
 
@@ -58,12 +55,9 @@ class _BookingScreenState extends State<BookingScreen> {
 
           _nameController.clear();
           _phoneController.clear();
-
-          setState(() {
-            selectedVisitType = null;
-            selectedDay = null;
-            selectedTime = null;
-          });
+          context
+              .read<AppointmentCubit>()
+              .resetBooking();
         }
 
         if (state is AppointmentError) {
@@ -73,11 +67,7 @@ class _BookingScreenState extends State<BookingScreen> {
         }
       },
       builder: (context, state) {
-        List<String> availableTimes = [];
-
-        if (state is AvailableTimesLoaded) {
-          availableTimes = state.times;
-        }
+        final cubit = context.read<AppointmentCubit>();
 
         return Scaffold(
           backgroundColor: ColorsManager.white,
@@ -87,11 +77,11 @@ class _BookingScreenState extends State<BookingScreen> {
           ),
           body: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.only(
-                bottom: 120,
-                top: 10,
-                right: 8,
-                left: 8,
+              padding: EdgeInsets.only(
+                bottom: 120.h,
+                top: 10.h,
+                right: 8.w,
+                left: 8.w,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -103,6 +93,7 @@ class _BookingScreenState extends State<BookingScreen> {
 
                   SizedBox(height: 16.h),
 
+                  /// بيانات المريض
                   PatientInfoCard(
                     title: 'بيانات المريض',
                     icon: Icons.person,
@@ -122,7 +113,7 @@ class _BookingScreenState extends State<BookingScreen> {
                       SizedBox(height: 16.h),
 
                       DropdownButtonFormField<String>(
-                        value: selectedVisitType,
+                        value: cubit.selectedVisitType,
                         decoration: const InputDecoration(
                           labelText: 'نوع الكشف',
                           border: OutlineInputBorder(),
@@ -142,70 +133,84 @@ class _BookingScreenState extends State<BookingScreen> {
                           ),
                         ],
                         onChanged: (value) {
-                          setState(() {
-                            selectedVisitType = value;
-                          });
+                          cubit.changeVisitType(value);
                         },
                       ),
+
+                      SizedBox(height: 12.h),
+
+                      if (cubit.selectedPrice > 0)
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.all(12.w),
+                          decoration: BoxDecoration(
+                            color: Colors.green.shade50,
+                            borderRadius: BorderRadius.circular(12.r),
+                            border: Border.all(color: Colors.green),
+                          ),
+                          child: Text(
+                            'سعر الكشف : ${cubit.selectedPrice.toInt()} جنيه',
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
 
                   SizedBox(height: 16.h),
 
+                  /// الموعد
                   PatientInfoCard(
                     title: 'الموعد',
                     icon: Icons.calendar_today,
                     children: [
                       SizedBox(
-                        height: 90,
+                        height: 90.h,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           itemCount: availableDays.length,
                           itemBuilder: (context, index) {
                             final day = availableDays[index];
 
-                            final isSelected =
-                                selectedDay == day;
+                            final isSelected = cubit.selectedDay == day;
 
                             return GestureDetector(
                               onTap: () {
-                                setState(() {
-                                  selectedDay = day;
-                                  selectedTime = null;
-                                });
-
-                                final date =
-                                    '${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}';
-
-                                context
-                                    .read<AppointmentCubit>()
-                                    .getAvailableTimes(date);
+                                cubit.selectDay(day);
                               },
                               child: Container(
-                                width: 80,
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 4,
-                                ),
+                                width: 110.w,
+                                margin: EdgeInsets.symmetric(horizontal: 4.w),
                                 decoration: BoxDecoration(
                                   color: isSelected
                                       ? Colors.blue
                                       : Colors.white,
-                                  borderRadius:
-                                  BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: ColorsManager.grey,
-                                  ),
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  border: Border.all(color: ColorsManager.grey),
                                 ),
                                 child: Column(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      AppointmentHelper
-                                          .getArabicDayName(day),
+                                      AppointmentHelper.getArabicDayName(day),
+                                      style: TextStyle(
+                                        color: isSelected
+                                            ? Colors.white
+                                            : Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
+                                    SizedBox(height: 4.h),
                                     Text(
                                       '${day.day}/${day.month}/${day.year}',
+                                      style: TextStyle(
+                                        color: isSelected
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -217,30 +222,121 @@ class _BookingScreenState extends State<BookingScreen> {
 
                       SizedBox(height: 16.h),
 
-                      if (selectedDay != null)
+                      if (cubit.selectedDay != null)
                         DropdownButtonFormField<String>(
-                          value: selectedTime,
+                          value: cubit.selectedTime,
                           decoration: const InputDecoration(
                             labelText: 'اختر الموعد',
-                            border: OutlineInputBorder(
-                            )
+                            border: OutlineInputBorder(),
                           ),
-                          items: availableTimes.map((time) {
-                            return DropdownMenuItem<String>(
-                              value: time,
-                              child: Text(time),
-                            );
-                          }).toList(),
+                          items: cubit.availableTimes
+                              .map(
+                                (time) => DropdownMenuItem(
+                                  value: time,
+                                  child: Text(time),
+                                ),
+                              )
+                              .toList(),
                           onChanged: (value) {
-                            setState(() {
-                              selectedTime = value;
-                            });
+                            cubit.selectTime(value);
                           },
                         ),
                     ],
                   ),
 
                   SizedBox(height: 24.h),
+                  Container(
+                    width: 400.w,
+                    height: 250.h,
+                    decoration: BoxDecoration(
+                      color: Colors.greenAccent.shade100,
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: Border.all(color: ColorsManager.grey),
+                    ),
+                    child: Padding(
+                      padding:  EdgeInsets.symmetric(
+                        horizontal: 8.w,
+                        vertical: 8.h,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                'ملاحظات هامة',
+                                style: TextStyle(
+                                  fontSize: 22.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green,
+                                ),
+                              ),
+                              SizedBox(width: 8.w),
+                              Icon(
+                                Icons.info_outline,
+                                color: Colors.green,
+                              ),
+                            ],
+                          ),
+
+                          SizedBox(height: 12.h),
+
+                          Text(
+                            ':سعر الكشف شامل',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 20.sp,
+                              fontWeight: FontWeight.w600,
+                              color: ColorsManager.black,
+                            ),
+                          ),
+
+                          SizedBox(height: 4.h),
+
+                          Text(
+                            ' الكشف',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 18.sp,
+                              color: ColorsManager.black,
+                            ),
+                          ),
+
+                          Text(
+                            ' رسم القلب',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 18.sp,
+                              color: ColorsManager.black,
+                            ),
+                          ),
+
+                          Text(
+                            ' أشعة إيكو القلب',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 18.sp,
+                              color: ColorsManager.black,
+                            ),
+                          ),
+
+                          SizedBox(height: 12.h),
+
+                          Text(
+                            'دفع تكلفة الكشف يكون في العيادة عند السكرتارية',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w500,
+                              color: ColorsManager.black,
+                            ),
+                          ),
+                        ],
+                      )
+                    ),
+                  ),
+                  SizedBox(height: 16.h,),
 
                   if (state is AppointmentLoading)
                     const Center(child: CircularProgressIndicator())
@@ -250,28 +346,29 @@ class _BookingScreenState extends State<BookingScreen> {
                       height: 50.h,
                       child: CustomElevatedButton(
                         text: 'تأكيد الحجز',
-                        onPressed: () {
-                          if (selectedDay == null ||
-                              selectedTime == null ||
-                              selectedVisitType == null) {
+                        onPressed: () async {
+                          if (cubit.selectedVisitType == null ||
+                              cubit.selectedDay == null ||
+                              cubit.selectedTime == null) {
                             return;
                           }
 
                           final date =
-                              '${selectedDay!.year}-${selectedDay!.month.toString().padLeft(2, '0')}-${selectedDay!.day.toString().padLeft(2, '0')}';
+                              '${cubit.selectedDay!.year}-${cubit.selectedDay!.month.toString().padLeft(2, '0')}-${cubit.selectedDay!.day.toString().padLeft(2, '0')}';
 
                           final appointment = AppointmentEntity(
+                            id: DateTime.now().millisecondsSinceEpoch
+                                .toString(),
                             patientName: _nameController.text,
                             phone: _phoneController.text,
-                            appointmentType: selectedVisitType!,
+                            appointmentType: cubit.selectedVisitType!,
                             date: date,
-                            time: selectedTime!,
-                            id: date,
+                            time: cubit.selectedTime!,
+                            price: cubit.selectedPrice,
                           );
 
-                          context.read<AppointmentCubit>().bookAppointment(
-                            appointment,
-                          );
+                          await cubit.bookAppointment(appointment);
+
                         },
                       ),
                     ),

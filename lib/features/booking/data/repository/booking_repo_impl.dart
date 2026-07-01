@@ -26,7 +26,7 @@ class AppointmentRepositoryImpl
         phone: appointment.phone,
         appointmentType: appointment.appointmentType,
         date: appointment.date,
-        time: appointment.time,
+        time: appointment.time, price: appointment.price,
       ),
     );
   }

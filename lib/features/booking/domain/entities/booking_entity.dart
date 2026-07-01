@@ -5,13 +5,15 @@ class AppointmentEntity {
   final String appointmentType;
   final String date;
   final String time;
+  final double price;
 
   const AppointmentEntity({
-     required this.id,
+    required this.id,
     required this.patientName,
     required this.phone,
     required this.appointmentType,
     required this.date,
     required this.time,
+    required this.price,
   });
 }

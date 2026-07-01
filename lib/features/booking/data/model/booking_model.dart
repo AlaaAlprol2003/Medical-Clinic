@@ -8,7 +8,7 @@ class AppointmentModel extends AppointmentEntity {
     required super.phone,
     required super.appointmentType,
     required super.date,
-    required super.time,
+    required super.time, required super.price,
   });
 
   factory AppointmentModel.fromJson(
@@ -21,7 +21,7 @@ class AppointmentModel extends AppointmentEntity {
       phone: json['phone'],
       appointmentType: json['appointmentType'],
       date: json['date'],
-      time: json['time'],
+      time: json['time'], price: json['price'],
     );
   }
 
